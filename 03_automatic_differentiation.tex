@@ -1,0 +1,208 @@
+\section{Automatic Differentiation}
+\begin{frame}{Automatic Differentiation}
+    \begin{center}
+    \Huge What is Automatic Differentiation?
+    \end{center}
+\end{frame}
+\begin{frame}{Automatic Differentiation}
+    \begin{block}{NOT Numerical Differentiation}
+        \begin{equation*}
+            \frac{df}{dx} = \lim_{h \to 0}\frac{f(x+h) - f(x)}{h}
+        \end{equation*}
+    \end{block}
+    \pause
+    \begin{block}{NOT Symbolic Differentiation}
+        \begin{align*}
+            &\frac{d}{dx}x^n     = n\cdot x^{n-1}, \\
+            &\frac{d}{dx}\cos(x)  = -\sin(x), \\
+            &\frac{d}{dx}\exp(x) = \exp(x), \\
+        \end{align*}
+    \end{block}
+\end{frame}
+\begin{frame}{Automatic Differentiation}
+    \begin{block}{So what is it?}
+        \begin{itemize}
+            \item Perfectly accurate derivatives.
+            \item No truncation or roundoff errors.
+            \item No expression swell
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Automatic Differentiation}
+    \begin{block}{Idea}
+        \begin{itemize}
+            \item Store function and derivative value in a tuple
+            \item Function = [\adpair{f}{f_x}]
+            \item Primary variable = [\adpair{x}{1}]
+        \end{itemize}
+    \end{block}
+\end{frame}
+\begin{frame}{Automatic Differentiation}
+    \begin{block}{Overload elementary operators}
+        \begin{equation*}
+            \begin{aligned}
+                &\big[\adpair{f}{f_x}\big] \pm \big[\adpair{g}{g_x}   \big] = \big[\adpair{f \pm g}{f_x \pm g_x} \big] ,\\\\
+                &\big[  \adpair{f}{f_x}   \big]\cdot \big[  \adpair{g}{g_x}   \big] = \big[  \adpair{f\cdot g}{f_x\cdot g + f\cdot g_x}   \big],\\\\
+                &\frac{\big[ \adpair{f}{f_x}   \big]}{\big[  \adpair{g}{g_x}   \big]} = \Bigg[  \adpair{\frac{f}{g}}{\frac{f_x\cdot g - f\cdot g_x}{g^2}}\Bigg],\\\\
+                &h\big(f(x)\big) = h\bigg(\big[ \adpair{f }{f_x}  \big]\bigg) = \big[ \adpair{h(f)}{ f_x\cdot h'(f)} \big].
+            \end{aligned}
+        \end{equation*}
+    \end{block}
+\end{frame}
+\begin{frame}{Automatic Differentiation}
+    \begin{block}{Overload elementary functions}
+        \begin{equation*}
+            \begin{aligned}
+                &\exp\bigg(\big[ \adpair{f}{f_x}  \big]\bigg) =  \big[ \adpair{\exp(f)}{\exp(f)\cdot f_x}  \big],\\
+                &\log\bigg(\big[ \adpair{f}{f_x}  \big]\bigg) =  \Big[  \adpair{\log(f)}{\frac{f_x}{f}}   \Big],\\
+                &\sin\bigg(\big[  \adpair{f}{f_x}   \big]\bigg) =  \big[  \adpair{\sin(f)}{\cos(f)\cdot f_x}   \big]\text{,  etc.}
+            \end{aligned}
+        \end{equation*}
+    \end{block}
+    \pause
+    \centering
+    \vspace{2em}
+    \Huge Multiple Dispatch in Julia
+\end{frame}
+\begin{frame}{Automatic Differentiation}
+    \begin{block}{Example}
+        \begin{equation*}
+            f(x) = x\cdot\exp(2x) \hspace{3em} \text{for}\hspace{1em} x = 2  \hspace{3em} f'(x) = (1+2x)\exp(2x)
+        \end{equation*}
+    \end{block}
+    \pause
+    \begin{block}{Calculations}
+        \begin{align*}
+            \action<+->
+            {2x &= [ \adpair{2}{0}  ]\cdot [ \adpair{2}{1} ] %\\
+                =[ \adpair{2\cdot2}{0\cdot1 + 2\cdot 1}  ]%\\
+                =[ \adpair{4}{2} ],\\\\}
+            \action<+->
+            {\exp(2x) &= \exp\big([ \adpair{4}{2} ]\big)
+                = [ \adpair{\exp(4)}{\exp(4)\cdot 2} ],\\\\}
+            \action<+->
+            {x\cdot \exp(2x) &= [\adpair{2}{1}]\cdot [                         \adpair{\exp(4)}{2\cdot\exp(4)}]\\
+                &=[\adpair{2\cdot\exp(4)}{1\cdot\exp(4) + 2\cdot 2\cdot\exp(4)}]\\
+                [\adpair{f}{f_x}] & = [ \adpair{2\cdot\exp(4)}{5\cdot\exp(4)}].}
+        \end{align*}
+    \end{block}
+\end{frame}
+\begin{frame}{Automatic Differentiation}
+    \begin{block}{Multiple dimensions}
+        \begin{itemize}
+            \item Scalar functions with multiple parameters -- $f(x,y,z)\in\Re^1$, $x,y,z\in\Re^1$
+            \begin{itemize}
+                \item $\left[\adpair{x}{(1,0,0)^\top}\right]$
+                \item $\left[\adpair{y}{(0,1,0)^\top}\right]$
+                \item $\left[\adpair{z}{(0,0,1)^\top}\right]$.
+            \end{itemize}
+            \pause
+            \item Vector functions -- $f(\textbf{x},\textbf{y})\in\Re^n$, $\textbf{x},\textbf{y}\in\Re^n$
+        \end{itemize}
+    \end{block}
+    \pause
+    \begin{block}{Example}
+        \begin{itemize}
+            \item $f(\textbf{x},\textbf{y}) = 2\cdot\textbf{x}\cdot\textbf{y}$
+        \end{itemize}
+        \pause
+        \begin{equation*}
+            \textbf{x} = \left[\begin{pmatrix}1\\2\\3
+            \end{pmatrix},\begin{pmatrix}
+            1&0&0&0&0&0\\
+            0&1&0&0&0&0\\
+            0&0&1&0&0&0\end{pmatrix} \right],
+            \hspace{0.1em}
+            \textbf{y}=\left[\begin{pmatrix}4\\5\\6
+            \end{pmatrix},\begin{pmatrix}
+            0&0&0&1&0&0\\
+            0&0&0&0&1&0\\
+            0&0&0&0&0&1\end{pmatrix} \right].
+        \end{equation*}
+    \end{block}
+\end{frame}
+\begin{frame}{Automatic Differentiation}
+    \begin{block}{Multiple dimensions}
+        \begin{align*}
+            \textbf{x}\cdot\textbf{y} &= \Vast[\adpair{\begin{pmatrix}
+            1\\2\\3
+            \end{pmatrix}
+            \cdot
+            \begin{pmatrix}
+            4\\5\\6
+            \end{pmatrix}
+            }{
+            \begin{pmatrix}
+            4&0&0\\
+            0&5&0\\
+            0&0&6\end{pmatrix}
+            \cdot
+            \begin{pmatrix}
+            1&0&0&0&0&0\\
+            0&1&0&0&0&0\\
+            0&0&1&0&0&0
+            \end{pmatrix}
+            +\\
+            &\hspace{2em}\begin{pmatrix}
+            1&0&0\\
+            0&2&0\\
+            0&0&3
+            \end{pmatrix}
+            \cdot
+            \begin{pmatrix}
+            0&0&0&1&0&0\\
+            0&0&0&0&1&0\\
+            0&0&0&0&0&1
+            \end{pmatrix}}\Vast]
+            \\
+            &= \Vast[\adpair{
+            \begin{pmatrix}
+            4\\10\\18
+            \end{pmatrix}
+            }{
+            \begin{pmatrix}
+            4&0&0&1&0&0\\
+            0&5&0&0&2&0\\
+            0&0&6&0&0&3
+            \end{pmatrix}
+            }\Vast].
+        \end{align*}
+        \pause
+        \vspace{-1em}
+        \begin{align*}
+            f(\textbf{x},\textbf{y}) = \left[\adpair{
+            \begin{pmatrix}
+            8\\20\\36
+            \end{pmatrix}
+            }{
+            \begin{pmatrix}
+            8&0&0&2&0&0\\
+            0&10&0&0&4&0\\
+            0&0&12&0&0&6
+            \end{pmatrix}
+            }\right].
+        \end{align*}
+    \end{block}
+\end{frame}
+\begin{frame}{Automatic Differentiation}
+    \begin{block}{Backward Automatic Differentiation}
+        \centering
+            \begin{itemize}
+                \item Different from Forward Automatic Differentiation
+                \item Efficient for many input parameters and few output parameters
+                \item Heavily used in machine learning
+                \item Not used in this thesis
+            \end{itemize}
+    \end{block}
+\end{frame}
+% \begin{frame}{Automatic Differentiation}
+%     \begin{block}{Problem}
+%         \centering
+%             \begin{equation*} 
+%                 y = 2x + \onslide<2->{3} 
+%             \end{equation*}
+%           \pause
+%           noe nytt
+%     \end{block}
+% \end{frame}

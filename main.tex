@@ -1,0 +1,77 @@
+\documentclass{beamer}
+\usetheme{Madrid}
+\usepackage{media9}
+\usepackage{mathtools}
+\usepackage{accents}
+\usepackage{animate}
+\usepackage[utf8]{inputenc}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{configurations/commands}
+\usepackage{configurations/jlcode}
+	%########### DEFINITIONS #############%
+	\def\RR{\mathbb{R}}
+	\def\ZZ{\mathbb{Z}}
+	\def\CC{\mathbb{C}}
+	\def\II{\mathbb{I}}
+	\def\FF{\mathbb{F}}
+	\def\JJ{\mathbb{J}}
+	\def\half{\frac{1}{2}}
+	\def\ihalf{\frac{i}{2}}
+	\def\Tr{\text{Tr}}
+
+\title{Automatic Differentiation in Julia}
+\subtitle{with Applications to Numerical Solution of Elliptic PDEs}
+
+% A subtitle is optional and this may be deleted
+%\subtitle{Optional Subtitle}
+
+\author{Sindre~Grøstad}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation. 
+
+\logo{}
+\institute[NTNU] % (optional, but mostly needed)
+{
+  %
+  TMA 4900
+}
+
+\date{}
+
+\subject{}
+
+\setbeamercovered{invisible}
+\setbeamertemplate{navigation symbols}{}
+
+% Let's get started
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{Introduction}
+\input{01_introduction.tex}
+\input{02_julia.tex}
+\input{03_automatic_differentiation.tex}
+\input{04_flow_solver.tex}
+\input{05_local_ad.tex}
+
+
+
+%\section*{Example}
+%\input{example.tex}
+
+% All of the following is optional and typically not needed. 
+%\appendix
+%\section<presentation>*{\appendixname}
+%\input{appendix.tex}
+
+
+\end{document}
+
+
