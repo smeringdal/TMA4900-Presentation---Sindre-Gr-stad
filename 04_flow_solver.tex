@@ -5,13 +5,38 @@
         \begin{itemize}
             \item Finite Volume method
             \item Discrete gradient and divergence operators
+            \item Equations on residual form
+            \item Newton-Raphson iterations
         \end{itemize}
     \end{block}
+        \begin{block}{Single Phase Compressible Pressure Solver}
         \begin{equation*}
-        \frac{\partial}{\partial t}(\phi\rho)(p) + \nabla\cdot(\rho\textbf{v}) = q,
-    \end{equation*}
-    \begin{equation*}
-        \textbf{v} = - \frac{k}{\mu}(\nabla p - \textbf{g}\rho).
-        \label{eq:pressSolverDarcy}
-    \end{equation*}
+            \frac{\partial}{\partial t}(\phi\rho) + \nabla\cdot(\rho\textbf{v}) = q,
+        \end{equation*}
+        \begin{equation*}
+            \textbf{v} = - \frac{k}{\mu}(\nabla p - \textbf{g}\rho).
+            \label{eq:pressSolverDarcy}
+        \end{equation*}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Applications of Automatic Differentiation}
+    \begin{block}{Discrete gradient and divergence operators}
+        \lstinputlisting{code/grad_and_div.jl}
+    \end{block}
+    \begin{block}{Darcy's Law}
+        \begin{equation*}
+            \textbf{v} = - \frac{k}{\mu}(\nabla p - \textbf{g}\rho).
+            \label{eq:pressSolverDarcy}
+        \end{equation*}
+        \lstinputlisting{code/flux.jl}
+    
+    \end{block}
+
+\end{frame}
+
+\begin{frame}{Applications of Automatic Differentiation}
+    \begin{block}{Main loop}
+        \lstinputlisting{code/press_solver_main_loop.jl}
+    \end{block}
 \end{frame}
